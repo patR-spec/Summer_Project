@@ -19,7 +19,6 @@ export default async function Home() {
   return (
     <main className="max-w-6xl mx-auto p-6">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold">OKGenie</h1>
         <p className="text-gray-600 mt-1">
           Curated, print-ready 3D models. We print, you receive.
         </p>

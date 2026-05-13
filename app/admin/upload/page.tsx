@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
-import UploadForm from './upload-form'
+import UploadForm from './uploadform'
 
 export default async function AdminUploadPage() {
   const supabase = await createClient()
