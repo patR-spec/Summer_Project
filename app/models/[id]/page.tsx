@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import BuyButton from './buy-button'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -63,12 +64,7 @@ export default async function ModelPage({ params }: Props) {
             ${(model.our_price_cents / 100).toFixed(2)}
           </div>
 
-          <button
-            disabled
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium mb-6 opacity-50 cursor-not-allowed"
-          >
-            Add to cart (coming soon)
-          </button>
+          <BuyButton modelId={model.id} />
 
           {model.description && (
             <div className="mb-6">
