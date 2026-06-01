@@ -23,67 +23,89 @@ export default async function ModelPage({ params }: Props) {
 
   const licenseLabels: Record<string, string> = {
     'cc0': 'Public Domain (CC0)',
-    'cc-by': 'Creative Commons — Attribution',
-    'cc-by-sa': 'Creative Commons — Attribution-ShareAlike',
+    'cc-by': 'Attribution required (CC-BY)',
+    'cc-by-sa': 'Attribution-ShareAlike (CC-BY-SA)',
     'proprietary': 'Licensed',
     'unclear': 'License unclear',
   }
   const licenseLabel = licenseLabels[model.license_type] ?? model.license_type
 
   return (
-    <main className="max-w-5xl mx-auto p-6">
-      <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 inline-block mb-6">
-        ← Back to catalog
-      </Link>
+    <main className="max-w-7xl mx-auto">
+      <div className="px-6 py-4 border-b border-neutral-200">
+        <Link href="/" className="text-xs uppercase tracking-wider text-neutral-500 hover:text-[#C9A961] transition-colors">
+          ← Back to catalog
+        </Link>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-2 border-b border-neutral-200">
+        <div className="aspect-square bg-[#DCEBF7] flex items-center justify-center p-8 md:border-r border-neutral-200">
           {model.preview_image_urls && model.preview_image_urls[0] ? (
             <img
               src={model.preview_image_urls[0]}
               alt={model.title}
-              className="w-full h-full object-cover"
+              className="max-w-full max-h-full object-contain"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-gray-400">
-              No preview available
-            </div>
+            <div className="text-xs text-neutral-500">No preview available</div>
           )}
         </div>
 
-        <div>
-          <p className="text-xs uppercase tracking-wide text-gray-500 mb-1">
-            {model.category}
-          </p>
-          <h1 className="text-3xl font-bold mb-2">{model.title}</h1>
-          <p className="text-gray-600 mb-4">
-            by <a href={model.original_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{model.designer_name}</a> on {model.source_site}
-          </p>
+        <div className="p-8 sm:p-12 flex flex-col justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-3">
+              {model.category}
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1d3a5a] tracking-tight mb-3">
+              {model.title}
+            </h1>
+            <p className="text-xs text-neutral-500 mb-8">
+              by{' '}
+              <a href={model.original_url} target="_blank" rel="noopener noreferrer" className="text-[#C9A961] hover:underline">
+                {model.designer_name}
+              </a>
+              {' · '}
+              {model.source_site}
+            </p>
 
-          <div className="text-3xl font-bold mb-6">
-            ${(model.our_price_cents / 100).toFixed(2)}
+            <div className="text-4xl font-bold text-[#C9A961] mb-8">
+              ${(model.our_price_cents / 100).toFixed(2)}
+            </div>
+
+            <BuyButton
+  modelId={model.id}
+  title={model.title}
+  priceCents={model.our_price_cents}
+  previewImageUrl={model.preview_image_urls?.[0] ?? null}
+/>
+
+            {model.description && (
+              <div className="mt-10 mb-8">
+                <p className="text-xs uppercase tracking-wider text-neutral-500 mb-3">About</p>
+                <p className="text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap">
+                  {model.description}
+                </p>
+              </div>
+            )}
           </div>
 
-          <BuyButton modelId={model.id} />
-
-          {model.description && (
-            <div className="mb-6">
-              <h2 className="font-semibold mb-2">About this model</h2>
-              <p className="text-gray-700 whitespace-pre-wrap">{model.description}</p>
+          <div className="mt-10 pt-6 border-t border-neutral-200 space-y-2 text-xs">
+            <div className="flex justify-between">
+              <span className="text-neutral-500 uppercase tracking-wider">License</span>
+              <span className="text-[#1d3a5a]">{licenseLabel}</span>
             </div>
-          )}
-
-          <div className="border-t pt-4 text-sm text-gray-600 space-y-1">
-            <p><span className="font-medium">License:</span> {licenseLabel}</p>
-            <p>
-              <span className="font-medium">Original:</span>{' '}
-              <a href={model.original_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">View source</a>
-            </p>
             {model.estimated_print_hours && (
-              <p>
-                <span className="font-medium">Estimated print time:</span> {model.estimated_print_hours} hours
-              </p>
+              <div className="flex justify-between">
+                <span className="text-neutral-500 uppercase tracking-wider">Print time</span>
+                <span className="text-[#1d3a5a]">~{model.estimated_print_hours} hrs</span>
+              </div>
             )}
+            <div className="flex justify-between">
+              <span className="text-neutral-500 uppercase tracking-wider">Source</span>
+              <a href={model.original_url} target="_blank" rel="noopener noreferrer" className="text-[#C9A961] hover:underline">
+                View original ↗
+              </a>
+            </div>
           </div>
         </div>
       </div>
