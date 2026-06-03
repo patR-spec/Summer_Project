@@ -2,8 +2,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import Link from 'next/link'
-import DeleteButton from './delete-button.tsx'
-import PublishToggle from './publish-toggle.tsx'
+import DeleteButton from './delete-button'
+import PublishToggle from './publish-toggle'
 
 export const dynamic = 'force-dynamic'
 
