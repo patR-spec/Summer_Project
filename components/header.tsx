@@ -34,8 +34,8 @@ export default function Header() {
           </Link>
           <Link href="/about" className="text-neutral-500 hover:text-[#C9A961] transition-colors">
             About
-          </Link>
-          <Link href="/admin/upload" className="text-neutral-500 hover:text-[#C9A961] transition-colors">
+            </Link>
+            <Link href="/admin/models" className="text-neutral-500 hover:text-[#C9A961] transition-colors">
             Admin
           </Link>
         </nav>
