@@ -61,10 +61,18 @@ export async function POST(request: Request) {
         }
 
         // Pull shipping info Stripe collected
-        const shippingAddress = (session as any).shipping_details?.address ?? {}
-        const shippingName = (session as any).shipping_details?.name ?? ''
-        const customerEmail = session.customer_details?.email ?? ''
+        // Stripe puts shipping info in different places depending on API version.
+        // Check all the known paths and use whichever has data.
+        const s: any = session
+        const shipping =
+          s.collected_information?.shipping_details ??
+          s.shipping_details ??
+          s.shipping ??
+          {}
 
+        const shippingAddress = shipping.address ?? s.customer_details?.address ?? {}
+        const shippingName = shipping.name ?? s.customer_details?.name ?? ''
+        const customerEmail = s.customer_details?.email ?? ''
         const { error: updateError } = await serviceSupabase
           .from('orders')
           .update({
