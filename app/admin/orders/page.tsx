@@ -7,17 +7,18 @@ import StatusDropdown from './status-dropdown'
 export const dynamic = 'force-dynamic'
 
 type OrderRow = {
-  id: string
-  status: string
-  total_cents: number
-  shipping_address: any
-  stripe_payment_id: string | null
-  estimated_ship_date: string | null
-  created_at: string
-  model_id: string | null
-  user_id: string | null
-  models: { title: string; preview_image_urls: string[] | null } | null
-}
+    id: string
+    status: string
+    total_cents: number
+    shipping_address: any
+    stripe_payment_id: string | null
+    estimated_ship_date: string | null
+    created_at: string
+    model_id: string | null
+    user_id: string | null
+    models: { title: string; preview_image_urls: string[] | null } | null
+    order_items: { quantity: number; title_snapshot: string; preview_image_url: string | null }[]
+  }
 
 export default async function AdminOrdersPage({
   searchParams,
@@ -39,7 +40,7 @@ export default async function AdminOrdersPage({
 
   let query = service
     .from('orders')
-    .select('id, status, total_cents, shipping_address, stripe_payment_id, estimated_ship_date, created_at, model_id, user_id, models(title, preview_image_urls)')
+    .select('id, status, total_cents, shipping_address, stripe_payment_id, estimated_ship_date, created_at, model_id, user_id, models(title, preview_image_urls), order_items(quantity, title_snapshot, preview_image_url)')
     .order('created_at', { ascending: false })
 
   if (statusFilter && statusFilter !== 'all') {
@@ -131,10 +132,10 @@ export default async function AdminOrdersPage({
                 className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 py-4 border-b last:border-b-0 border-neutral-200 items-center"
               >
                 <div className="md:col-span-1">
-                  {order.models?.preview_image_urls?.[0] ? (
+                  {(order.order_items?.[0]?.preview_image_url ?? order.models?.preview_image_urls?.[0]) ? (
                     <img
-                      src={order.models.preview_image_urls[0]}
-                      alt={order.models.title}
+                      src={order.order_items?.[0]?.preview_image_url ?? order.models?.preview_image_urls?.[0] ?? ''}
+                      alt=""
                       className="w-12 h-12 object-cover bg-[#DCEBF7]"
                     />
                   ) : (
@@ -154,9 +155,27 @@ export default async function AdminOrdersPage({
                 </div>
 
                 <div className="md:col-span-2">
-                  <p className="text-sm text-[#1d3a5a] truncate">
-                    {order.models?.title ?? 'Custom request'}
-                  </p>
+                  {order.order_items && order.order_items.length > 0 ? (
+                    order.order_items.length === 1 ? (
+                      <p className="text-sm text-[#1d3a5a] truncate">
+                        {order.order_items[0].title_snapshot}
+                        {order.order_items[0].quantity > 1 && ` × ${order.order_items[0].quantity}`}
+                      </p>
+                    ) : (
+                      <div>
+                        <p className="text-sm text-[#1d3a5a]">
+                          {order.order_items.reduce((s, i) => s + i.quantity, 0)} items
+                        </p>
+                        <p className="text-xs text-neutral-500 truncate">
+                          {order.order_items.map((i) => i.title_snapshot).join(', ')}
+                        </p>
+                      </div>
+                    )
+                  ) : (
+                    <p className="text-sm text-[#1d3a5a] truncate">
+                      {order.models?.title ?? 'Custom request'}
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2 text-xs">

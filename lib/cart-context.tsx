@@ -1,7 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
 export type CartItem = {
   id: string
   title: string
@@ -53,7 +52,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [items, loaded])
 
-  function add(item: Omit<CartItem, 'quantity'>) {
+  const add = useCallback((item: Omit<CartItem, 'quantity'>) => {
     setItems((prev) => {
       const existing = prev.find((i) => i.id === item.id)
       if (existing) {
@@ -63,23 +62,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...item, quantity: 1 }]
     })
-  }
+  }, [])
 
-  function remove(id: string) {
+  const remove = useCallback((id: string) => {
     setItems((prev) => prev.filter((i) => i.id !== id))
-  }
+  }, [])
 
-  function setQuantity(id: string, quantity: number) {
-    if (quantity < 1) {
-      remove(id)
-      return
-    }
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, quantity } : i)))
-  }
+  const setQuantity = useCallback((id: string, quantity: number) => {
+    setItems((prev) => {
+      if (quantity < 1) return prev.filter((i) => i.id !== id)
+      return prev.map((i) => (i.id === id ? { ...i, quantity } : i))
+    })
+  }, [])
 
-  function clear() {
+  const clear = useCallback(() => {
     setItems([])
-  }
+  }, [])
 
   const count = items.reduce((sum, i) => sum + i.quantity, 0)
   const subtotalCents = items.reduce((sum, i) => sum + i.price_cents * i.quantity, 0)

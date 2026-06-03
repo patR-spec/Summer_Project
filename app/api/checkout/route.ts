@@ -3,44 +3,74 @@ import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase-server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 
+type CartLine = {
+  model_id: string
+  quantity: number
+}
+
 export async function POST(request: Request) {
   try {
-    const { model_id } = await request.json()
-    if (!model_id) {
-      return NextResponse.json({ error: 'Missing model_id' }, { status: 400 })
+    const body = await request.json()
+
+    // Accept either single-item ({ model_id }) or multi-item ({ items: [...] })
+    let lines: CartLine[] = []
+    if (body.items && Array.isArray(body.items)) {
+      lines = body.items
+        .filter((i: any) => i?.model_id && typeof i.quantity === 'number' && i.quantity > 0)
+        .map((i: any) => ({ model_id: i.model_id, quantity: Math.min(i.quantity, 50) }))
+    } else if (body.model_id) {
+      lines = [{ model_id: body.model_id, quantity: 1 }]
     }
 
-    // Verify the model exists and is published (use the user's session)
+    if (lines.length === 0) {
+      return NextResponse.json({ error: 'No items in request' }, { status: 400 })
+    }
+
+    // Verify all models exist and are published (use user's session)
     const supabase = await createClient()
-    const { data: model, error: modelError } = await supabase
+    const modelIds = lines.map((l) => l.model_id)
+
+    const { data: models, error: modelError } = await supabase
       .from('models')
       .select('id, title, our_price_cents, preview_image_urls, is_published')
-      .eq('id', model_id)
+      .in('id', modelIds)
       .eq('is_published', true)
-      .single()
 
-    if (modelError || !model) {
-      return NextResponse.json({ error: 'Model not found' }, { status: 404 })
+    if (modelError) {
+      return NextResponse.json({ error: 'Failed to load models' }, { status: 500 })
+    }
+    if (!models || models.length !== lines.length) {
+      return NextResponse.json({ error: 'Some items are unavailable' }, { status: 400 })
     }
 
-    // Get the current user (might be null — guest checkout is fine)
+    // Pair lines with their model data, preserving cart order
+    const enriched = lines.map((line) => {
+      const m = models.find((x) => x.id === line.model_id)!
+      return { ...line, model: m }
+    })
+
+    const totalCents = enriched.reduce(
+      (sum, e) => sum + e.model.our_price_cents * e.quantity,
+      0
+    )
+
     const { data: { user } } = await supabase.auth.getUser()
 
-    // Use a service-role client to insert the order (bypasses RLS for the system insert)
-    const serviceSupabase = createServiceClient(
+    // Service-role client for system inserts
+    const service = createServiceClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    // Create a pending order row
-    const { data: order, error: orderError } = await serviceSupabase
+    // Create the order shell
+    const { data: order, error: orderError } = await service
       .from('orders')
       .insert({
         user_id: user?.id ?? null,
-        model_id: model.id,
+        model_id: lines.length === 1 ? lines[0].model_id : null,
         status: 'pending_payment',
-        total_cents: model.our_price_cents,
-        shipping_address: {}, // Stripe will collect this
+        total_cents: totalCents,
+        shipping_address: {},
       })
       .select()
       .single()
@@ -50,38 +80,51 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Could not create order' }, { status: 500 })
     }
 
-    // Get the site URL — use the request's origin so it works locally and in prod
-    const origin = request.headers.get('origin') ?? 'http://localhost:3001'
+    // Create order_items rows
+    const orderItems = enriched.map((e) => ({
+      order_id: order.id,
+      model_id: e.model.id,
+      quantity: e.quantity,
+      unit_price_cents: e.model.our_price_cents,
+      title_snapshot: e.model.title,
+      preview_image_url: e.model.preview_image_urls?.[0] ?? null,
+    }))
 
-    // Create the Stripe Checkout Session
+    const { error: itemsError } = await service.from('order_items').insert(orderItems)
+
+    if (itemsError) {
+      console.error('Order items creation failed:', itemsError)
+      return NextResponse.json({ error: 'Could not create order items' }, { status: 500 })
+    }
+
+    // Build Stripe line items
+    const stripeLineItems = enriched.map((e) => ({
+      price_data: {
+        currency: 'usd',
+        unit_amount: e.model.our_price_cents,
+        product_data: {
+          name: e.model.title,
+          images: e.model.preview_image_urls?.slice(0, 1) ?? [],
+        },
+      },
+      quantity: e.quantity,
+    }))
+
+    const origin = request.headers.get('origin') ?? 'http://localhost:3000'
+
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            unit_amount: model.our_price_cents,
-            product_data: {
-              name: model.title,
-              images: model.preview_image_urls?.slice(0, 1) ?? [],
-            },
-          },
-          quantity: 1,
-        },
-      ],
-      shipping_address_collection: {
-        allowed_countries: ['US'], // start US-only; expand later
-      },
+      line_items: stripeLineItems,
+      shipping_address_collection: { allowed_countries: ['US'] },
       success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/models/${model.id}`,
+      cancel_url: `${origin}/cart`,
       metadata: {
         order_id: order.id,
       },
     })
 
-    // Save the Stripe session ID on the order so we can look it up later
-    await serviceSupabase
+    await service
       .from('orders')
       .update({ stripe_payment_id: session.id })
       .eq('id', order.id)

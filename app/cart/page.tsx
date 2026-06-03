@@ -1,5 +1,5 @@
 'use client'
-
+import CheckoutButton from './checkout-button'
 import Link from 'next/link'
 import { useCart } from '@/lib/cart-context'
 
@@ -135,15 +135,7 @@ export default function CartPage() {
             </div>
           </div>
 
-          <button
-            disabled
-            className="w-full bg-[#1d3a5a] text-white py-4 text-xs uppercase tracking-wider opacity-50 cursor-not-allowed"
-          >
-            Checkout (single-item only for now)
-          </button>
-          <p className="text-xs text-neutral-500 mt-3 text-center">
-            Multi-item checkout coming soon.<br />Use Buy Now on a product page for now.
-          </p>
+          <CheckoutButton />
         </div>
       </div>
     </main>

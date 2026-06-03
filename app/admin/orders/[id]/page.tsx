@@ -21,7 +21,7 @@ export default async function OrderDetailPage({ params }: Props) {
 
   const { data: order, error } = await service
     .from('orders')
-    .select('*, models(title, preview_image_urls, designer_name, our_price_cents)')
+    .select('*, models(title, preview_image_urls, designer_name, our_price_cents), order_items(id, quantity, unit_price_cents, title_snapshot, preview_image_url, model_id)')
     .eq('id', id)
     .single()
 
@@ -29,6 +29,23 @@ export default async function OrderDetailPage({ params }: Props) {
 
   const addr = (order.shipping_address as any) ?? {}
   const created = new Date(order.created_at)
+
+  // Build a unified items list: prefer order_items, fall back to legacy single model
+  const items =
+    order.order_items && order.order_items.length > 0
+      ? order.order_items
+      : order.models
+      ? [{
+          id: 'legacy',
+          quantity: 1,
+          unit_price_cents: order.models.our_price_cents,
+          title_snapshot: order.models.title,
+          preview_image_url: order.models.preview_image_urls?.[0] ?? null,
+          model_id: order.model_id,
+        }]
+      : []
+
+  const totalQuantity = items.reduce((sum: number, i: any) => sum + i.quantity, 0)
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-10">
@@ -50,26 +67,48 @@ export default async function OrderDetailPage({ params }: Props) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Item + status */}
+        {/* Items + status */}
         <div>
-          <p className="text-xs uppercase tracking-wider text-[#C9A961] mb-3">Item</p>
-          <div className="flex gap-4 items-start mb-6">
-            {order.models?.preview_image_urls?.[0] ? (
-              <img
-                src={order.models.preview_image_urls[0]}
-                alt={order.models.title}
-                className="w-24 h-24 object-cover bg-[#DCEBF7]"
-              />
-            ) : (
-              <div className="w-24 h-24 bg-neutral-100" />
-            )}
-            <div>
-              <p className="text-sm text-[#1d3a5a]">{order.models?.title ?? 'Custom request'}</p>
-              <p className="text-xs text-neutral-500 mt-1">
-                by {order.models?.designer_name ?? '—'}
-              </p>
+          <p className="text-xs uppercase tracking-wider text-[#C9A961] mb-3">
+            Items ({totalQuantity})
+          </p>
+
+          {items.length === 0 ? (
+            <p className="text-sm text-neutral-500 mb-6">No items recorded.</p>
+          ) : (
+            <div className="space-y-4 mb-6">
+              {items.map((item: any) => (
+                <div key={item.id} className="flex gap-4 items-start border-b border-neutral-100 pb-4 last:border-b-0">
+                  {item.preview_image_url ? (
+                    <img
+                      src={item.preview_image_url}
+                      alt={item.title_snapshot}
+                      className="w-20 h-20 object-cover bg-[#DCEBF7] flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 bg-neutral-100 flex-shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-[#1d3a5a] truncate">{item.title_snapshot}</p>
+                    <p className="text-xs text-neutral-500 mt-1">
+                      Qty {item.quantity} · ${(item.unit_price_cents / 100).toFixed(2)} each
+                    </p>
+                    {item.model_id && (
+                      <Link
+                        href={`/models/${item.model_id}`}
+                        className="text-xs uppercase tracking-wider text-[#C9A961] hover:underline mt-1 inline-block"
+                      >
+                        View product →
+                      </Link>
+                    )}
+                  </div>
+                  <p className="text-sm font-bold text-[#C9A961] whitespace-nowrap">
+                    ${((item.unit_price_cents * item.quantity) / 100).toFixed(2)}
+                  </p>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
 
           <p className="text-xs uppercase tracking-wider text-[#C9A961] mb-3">Status</p>
           <div className="mb-6">
@@ -83,13 +122,13 @@ export default async function OrderDetailPage({ params }: Props) {
 
           {order.stripe_payment_id && (
             <a
-            href={`https://dashboard.stripe.com/test/checkout/sessions/${order.stripe_payment_id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs uppercase tracking-wider text-[#1d3a5a] hover:text-[#C9A961]"
-          >
-            View in Stripe ↗
-          </a>
+              href={`https://dashboard.stripe.com/test/checkout/sessions/${order.stripe_payment_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs uppercase tracking-wider text-[#1d3a5a] hover:text-[#C9A961]"
+            >
+              View in Stripe ↗
+            </a>
           )}
         </div>
 
@@ -120,7 +159,6 @@ export default async function OrderDetailPage({ params }: Props) {
         <p>Order ID: {order.id}</p>
         {order.stripe_payment_id && <p>Stripe ID: {order.stripe_payment_id}</p>}
         {order.user_id && <p>User ID: {order.user_id}</p>}
-        {order.custom_request_id && <p>Custom request ID: {order.custom_request_id}</p>}
       </div>
     </main>
   )
