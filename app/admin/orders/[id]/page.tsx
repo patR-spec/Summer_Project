@@ -116,9 +116,35 @@ export default async function OrderDetailPage({ params }: Props) {
           </div>
 
           <p className="text-xs uppercase tracking-wider text-[#C9A961] mb-3">Amount</p>
-          <p className="text-2xl font-bold text-[#C9A961] mb-6">
-            ${(order.total_cents / 100).toFixed(2)}
-          </p>
+          {(() => {
+            const subtotal = items.reduce(
+              (sum: number, i: any) => sum + i.unit_price_cents * i.quantity,
+              0
+            )
+            const shipping = order.shipping_cents ?? 0
+            return (
+              <div className="mb-6 space-y-1 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-neutral-500">Subtotal</span>
+                  <span className="text-[#1d3a5a]">${(subtotal / 100).toFixed(2)}</span>
+                </div>
+                {shipping > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-500">
+                      Shipping {order.shipping_method ? `(${order.shipping_method})` : ''}
+                    </span>
+                    <span className="text-[#1d3a5a]">${(shipping / 100).toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between border-t border-neutral-200 pt-2 mt-2">
+                  <span className="text-xs uppercase tracking-wider text-[#1d3a5a]">Total</span>
+                  <span className="text-xl font-bold text-[#C9A961]">
+                    ${(order.total_cents / 100).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+            )
+          })()}
 
           {order.stripe_payment_id && (
             <a

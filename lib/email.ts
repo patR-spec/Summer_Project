@@ -1,6 +1,12 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Lazy-initialize so missing API key doesn't crash the build
+let _resend: Resend | null = null
+function getResend(): Resend | null {
+  if (!process.env.RESEND_API_KEY) return null
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY)
+  return _resend
+}
 
 // Resend's onboarding sender works without domain setup, but emails will
 // land in spam often. Replace with 'OKGenie <orders@yourdomain.com>' once
@@ -62,7 +68,12 @@ export async function sendCustomerOrderConfirmation(data: OrderEmailData) {
       .filter(Boolean)
       .join('<br>')
 
-    await resend.emails.send({
+      const resend = getResend()
+      if (!resend) {
+        console.log('Resend client not initialized')
+        return
+      }
+      await resend.emails.send({
       from: FROM,
       to: data.customerEmail,
       subject: `Order confirmed — ${data.orderId.slice(0, 8).toUpperCase()}`,
@@ -132,7 +143,12 @@ export async function sendAdminOrderNotification(data: OrderEmailData) {
       .filter(Boolean)
       .join('<br>')
 
-    await resend.emails.send({
+      const resend = getResend()
+      if (!resend) {
+        console.log('Resend client not initialized')
+        return
+      }
+      await resend.emails.send({
       from: FROM,
       to: ADMIN_RECIPIENTS,
       subject: `🛎️ New order — $${(data.totalCents / 100).toFixed(2)} — ${data.orderId.slice(0, 8).toUpperCase()}`,

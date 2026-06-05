@@ -74,10 +74,21 @@ export async function POST(request: Request) {
         const shippingAddress = shipping.address ?? s.customer_details?.address ?? {}
         const shippingName = shipping.name ?? s.customer_details?.name ?? ''
         const customerEmail = s.customer_details?.email ?? ''
+        // Extract shipping rate + final total from Stripe session
+        const shippingCents =
+          (session as any).total_details?.amount_shipping ?? 0
+        const shippingMethod =
+          (session as any).shipping_cost?.shipping_rate?.display_name ??
+          ((session as any).shipping_options?.[0]?.shipping_rate ? 'Standard shipping' : null)
+        const finalTotalCents = session.amount_total ?? 0
+
         const { error: updateError } = await serviceSupabase
           .from('orders')
           .update({
             status: 'paid',
+            total_cents: finalTotalCents,
+            shipping_cents: shippingCents,
+            shipping_method: shippingMethod,
             shipping_address: {
               name: shippingName,
               email: customerEmail,

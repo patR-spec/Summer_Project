@@ -138,16 +138,40 @@ export async function POST(request: Request) {
     const origin = request.headers.get('origin') ?? 'http://localhost:3000'
 
     const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      payment_method_types: ['card'],
-      line_items: stripeLineItems,
-      shipping_address_collection: { allowed_countries: ['US'] },
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/cart`,
-      metadata: {
-        order_id: order.id,
-      },
-    })
+        mode: 'payment',
+        payment_method_types: ['card'],
+        line_items: stripeLineItems,
+        shipping_address_collection: { allowed_countries: ['US'] },
+        shipping_options: [
+          {
+            shipping_rate_data: {
+              type: 'fixed_amount',
+              fixed_amount: { amount: 600, currency: 'usd' },
+              display_name: 'Standard shipping',
+              delivery_estimate: {
+                minimum: { unit: 'business_day', value: 3 },
+                maximum: { unit: 'business_day', value: 7 },
+              },
+            },
+          },
+          {
+            shipping_rate_data: {
+              type: 'fixed_amount',
+              fixed_amount: { amount: 1200, currency: 'usd' },
+              display_name: 'Express shipping',
+              delivery_estimate: {
+                minimum: { unit: 'business_day', value: 1 },
+                maximum: { unit: 'business_day', value: 3 },
+              },
+            },
+          },
+        ],
+        success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/cart`,
+        metadata: {
+          order_id: order.id,
+        },
+      })
 
     await service
       .from('orders')
