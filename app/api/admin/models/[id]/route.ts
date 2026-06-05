@@ -50,7 +50,23 @@ export async function PATCH(
   for (const key of allowed) {
     if (key in body) updates[key] = body[key]
   }
-
+  // Type-safe validation on specific fields
+  if ('license_type' in updates) {
+    const valid = ['cc0', 'cc-by', 'cc-by-sa', 'cc-by-nc', 'cc-by-nd', 'proprietary', 'unclear']
+    if (!valid.includes(updates.license_type)) {
+      return NextResponse.json({ error: 'Invalid license_type' }, { status: 400 })
+    }
+  }
+  if ('our_price_cents' in updates) {
+    const price = Number(updates.our_price_cents)
+    if (!Number.isFinite(price) || price < 0 || price > 1_000_000) {
+      return NextResponse.json({ error: 'Invalid price' }, { status: 400 })
+    }
+    updates.our_price_cents = Math.round(price)
+  }
+  if ('is_published' in updates) {
+    updates.is_published = Boolean(updates.is_published)
+  }
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })
   }

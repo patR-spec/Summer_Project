@@ -45,8 +45,11 @@ export async function POST(request: Request) {
     }
 
     if (lines.length === 0) {
-      return NextResponse.json({ error: 'No items in request' }, { status: 400 })
-    }
+        return NextResponse.json({ error: 'No items in request' }, { status: 400 })
+      }
+      if (lines.length > 50) {
+        return NextResponse.json({ error: 'Too many items in cart' }, { status: 400 })
+      }
 
     // Verify all models exist and are published (use user's session)
     const supabase = await createClient()
