@@ -10,9 +10,7 @@ const FROM = 'OKGenie <onboarding@resend.dev>'
 // Admins who should get a notification on every new order.
 // Add/remove emails here as your team changes.
 const ADMIN_RECIPIENTS = [
-  'pkrobin.sales@gmail.com',
-  'parismay2004@hotmail.com',
-]
+  'pxtrick2004@gmail.com']
 
 type OrderItem = {
   title_snapshot: string
