@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import type Stripe from 'stripe'
+import { sendCustomerOrderConfirmation, sendAdminOrderNotification } from '@/lib/email'
 
 // Stripe needs the raw request body (not parsed JSON) to verify the signature.
 // This export tells Next.js to give us the raw body.
@@ -91,9 +92,31 @@ export async function POST(request: Request) {
         }
 
         console.log(`Order ${orderId} marked paid`)
+
+        // Fetch the items for the email
+        const { data: orderDetail } = await serviceSupabase
+          .from('orders')
+          .select('id, total_cents, shipping_address, order_items(title_snapshot, quantity, unit_price_cents)')
+          .eq('id', orderId)
+          .single()
+
+        if (orderDetail) {
+          const emailData = {
+            orderId: orderDetail.id,
+            totalCents: orderDetail.total_cents,
+            customerName: shippingName,
+            customerEmail: customerEmail,
+            shippingAddress: orderDetail.shipping_address,
+            items: orderDetail.order_items ?? [],
+          }
+
+          // Fire emails asynchronously — webhook should respond fast
+          sendCustomerOrderConfirmation(emailData)
+          sendAdminOrderNotification(emailData)
+        }
+
         break
       }
-
       case 'checkout.session.expired': {
         const session = event.data.object as Stripe.Checkout.Session
         const orderId = session.metadata?.order_id
