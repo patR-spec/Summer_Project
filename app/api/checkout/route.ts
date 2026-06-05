@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { createClient } from '@/lib/supabase-server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
+import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit'
+
 
 type CartLine = {
   model_id: string
@@ -9,7 +11,27 @@ type CartLine = {
 }
 
 export async function POST(request: Request) {
-  try {
+    // Rate limit: 10 checkout attempts per IP per 5 minutes
+    const rateLimitKey = getRateLimitKey(request, 'checkout')
+    const rateLimit = checkRateLimit({
+      key: rateLimitKey,
+      limit: 10,
+      windowMs: 5 * 60 * 1000,
+    })
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: 'Too many checkout attempts. Please wait a few minutes and try again.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString(),
+          },
+        }
+      )
+    }
+  
+    try {
+      // ...rest of your existing code
     const body = await request.json()
 
     // Accept either single-item ({ model_id }) or multi-item ({ items: [...] })
