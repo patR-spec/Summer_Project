@@ -1,11 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 
 export default function UploadForm() {
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
+  const router = useRouter()
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -64,6 +66,11 @@ export default function UploadForm() {
 
       setMessage('✅ Model added successfully')
       form.reset()
+      
+      // Redirect to models page after 1 second to see the new model
+      setTimeout(() => {
+        router.push('/admin/models')
+      }, 1000)
     } catch (err: any) {
       setMessage(`❌ Error: ${err.message}`)
     } finally {

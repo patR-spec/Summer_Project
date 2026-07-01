@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase-server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limit'
@@ -77,6 +78,7 @@ export async function PATCH(
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  revalidatePath('/admin/models')
   return NextResponse.json({ success: true })
 }
 
@@ -107,5 +109,6 @@ export async function DELETE(
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  revalidatePath('/admin/models')
   return NextResponse.json({ success: true })
 }

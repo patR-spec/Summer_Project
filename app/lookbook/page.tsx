@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+export const dynamic = 'force-dynamic'
 
 export default async function LookbookPage() {
   const { data: models } = await supabase
