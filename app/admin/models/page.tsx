@@ -7,6 +7,8 @@ import PublishToggle from './publish-toggle'
 
 export const dynamic = 'force-dynamic'
 
+if (process.env.NODE_ENV !== 'development') redirect('/')
+
 export default async function AdminModelsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

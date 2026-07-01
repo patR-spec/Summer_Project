@@ -5,12 +5,16 @@ import Image from 'next/image'
 import { useState } from 'react'
 import { useCart } from '@/lib/cart-context'
 
+const isDev = process.env.NODE_ENV === 'development'
+
 const navLinks = [
   { href: '/', label: 'Shop' },
   { href: '/lookbook', label: 'Lookbook' },
   { href: '/about', label: 'About' },
-  { href: '/admin/orders', label: 'Orders' },
-  { href: '/admin/models', label: 'Models' },
+  ...(isDev ? [
+    { href: '/admin/orders', label: 'Orders' },
+    { href: '/admin/models', label: 'Models' },
+  ] : []),
 ]
 
 export default function Header() {
@@ -39,8 +43,12 @@ export default function Header() {
           <Link href="/" className="text-neutral-900 hover:text-[#C9A961] transition-colors">Shop</Link>
           <Link href="/lookbook" className="text-neutral-500 hover:text-[#C9A961] transition-colors">Lookbook</Link>
           <Link href="/about" className="text-neutral-500 hover:text-[#C9A961] transition-colors">About</Link>
-          <Link href="/admin/orders" className="text-neutral-500 hover:text-[#C9A961] transition-colors">Orders</Link>
-          <Link href="/admin/models" className="text-neutral-500 hover:text-[#C9A961] transition-colors">Models</Link>
+          {isDev && (
+            <>
+              <Link href="/admin/orders" className="text-neutral-500 hover:text-[#C9A961] transition-colors">Orders</Link>
+              <Link href="/admin/models" className="text-neutral-500 hover:text-[#C9A961] transition-colors">Models</Link>
+            </>
+          )}
         </nav>
 
         {/* Right: Cart + hamburger */}

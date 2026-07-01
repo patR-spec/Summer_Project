@@ -6,6 +6,8 @@ import StatusDropdown from './status-dropdown'
 
 export const dynamic = 'force-dynamic'
 
+if (process.env.NODE_ENV !== 'development') redirect('/')
+
 type OrderRow = {
     id: string
     status: string
