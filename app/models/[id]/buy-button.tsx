@@ -52,14 +52,14 @@ export default function BuyButton({ modelId, title, priceCents, previewImageUrl 
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={handleAddToCart}
-          className="border border-[#1d3a5a] text-[#1d3a5a] py-4 text-xs uppercase tracking-wider hover:bg-[#1d3a5a] hover:text-white transition-colors"
+          className="border border-white/20 text-white py-4 text-xs uppercase tracking-wider hover:bg-white/10 transition-colors"
         >
           {added ? 'Added ✓' : 'Add to cart'}
         </button>
         <button
           onClick={handleBuyNow}
           disabled={loading}
-          className="bg-[#1d3a5a] text-white py-4 text-xs uppercase tracking-wider hover:bg-[#C9A961] transition-colors disabled:opacity-50"
+          className="bg-[#C9A961] text-[#0A0A0C] py-4 text-xs uppercase tracking-wider hover:bg-[#a58943] transition-colors disabled:opacity-50"
         >
           {loading ? 'Loading...' : 'Buy now'}
         </button>
@@ -74,7 +74,7 @@ export default function BuyButton({ modelId, title, priceCents, previewImageUrl 
         </button>
       )}
 
-      {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+      {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
     </div>
   )
 }

@@ -14,13 +14,13 @@ const STATUS_OPTIONS = [
 ]
 
 const STATUS_COLORS: Record<string, string> = {
-  pending_payment: 'text-neutral-500',
-  paid: 'text-[#1d3a5a]',
-  printing: 'text-blue-600',
+  pending_payment: 'text-gray-500',
+  paid: 'text-gray-300',
+  printing: 'text-blue-400',
   shipped: 'text-[#C9A961]',
-  delivered: 'text-green-700',
-  cancelled: 'text-red-600',
-  refunded: 'text-red-600',
+  delivered: 'text-green-400',
+  cancelled: 'text-red-400',
+  refunded: 'text-red-400',
 }
 
 export default function StatusDropdown({ orderId, currentStatus }: { orderId: string; currentStatus: string }) {
@@ -57,7 +57,7 @@ export default function StatusDropdown({ orderId, currentStatus }: { orderId: st
       value={status}
       onChange={handleChange}
       disabled={saving}
-      className={`text-xs uppercase tracking-wider bg-transparent border border-neutral-300 px-2 py-1 cursor-pointer hover:border-[#C9A961] disabled:opacity-50 ${STATUS_COLORS[status] ?? ''}`}
+      className={`text-xs uppercase tracking-wider bg-[#16181D] border border-white/10 px-2 py-1 cursor-pointer hover:border-[#C9A961] disabled:opacity-50 ${STATUS_COLORS[status] ?? ''}`}
     >
       {STATUS_OPTIONS.map((s) => (
         <option key={s} value={s}>

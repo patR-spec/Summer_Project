@@ -30,7 +30,6 @@ export default async function OrderDetailPage({ params }: Props) {
   const addr = (order.shipping_address as any) ?? {}
   const created = new Date(order.created_at)
 
-  // Build a unified items list: prefer order_items, fall back to legacy single model
   const items =
     order.order_items && order.order_items.length > 0
       ? order.order_items
@@ -51,17 +50,17 @@ export default async function OrderDetailPage({ params }: Props) {
     <main className="max-w-4xl mx-auto px-6 py-10">
       <Link
         href="/admin/orders"
-        className="text-xs uppercase tracking-wider text-neutral-500 hover:text-[#C9A961] inline-block mb-6"
+        className="text-xs uppercase tracking-wider text-gray-500 hover:text-[#C9A961] inline-block mb-6"
       >
         ← Back to orders
       </Link>
 
-      <div className="border-b border-neutral-200 pb-6 mb-8">
-        <p className="text-xs uppercase tracking-[0.2em] text-[#1d3a5a] mb-2">Order</p>
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#1d3a5a] tracking-tight font-mono">
+      <div className="border-b border-white/10 pb-6 mb-8">
+        <p className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-2">Order</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight font-mono">
           {order.id.slice(0, 8)}
         </h1>
-        <p className="text-xs text-neutral-500 mt-2">
+        <p className="text-xs text-gray-500 mt-2">
           Placed {created.toLocaleString()}
         </p>
       </div>
@@ -74,23 +73,23 @@ export default async function OrderDetailPage({ params }: Props) {
           </p>
 
           {items.length === 0 ? (
-            <p className="text-sm text-neutral-500 mb-6">No items recorded.</p>
+            <p className="text-sm text-gray-500 mb-6">No items recorded.</p>
           ) : (
             <div className="space-y-4 mb-6">
               {items.map((item: any) => (
-                <div key={item.id} className="flex gap-4 items-start border-b border-neutral-100 pb-4 last:border-b-0">
+                <div key={item.id} className="flex gap-4 items-start border-b border-white/5 pb-4 last:border-b-0">
                   {item.preview_image_url ? (
                     <img
                       src={item.preview_image_url}
                       alt={item.title_snapshot}
-                      className="w-20 h-20 object-cover bg-[#DCEBF7] flex-shrink-0"
+                      className="w-20 h-20 object-cover bg-[#0c1520] flex-shrink-0"
                     />
                   ) : (
-                    <div className="w-20 h-20 bg-neutral-100 flex-shrink-0" />
+                    <div className="w-20 h-20 bg-[#1a1d24] flex-shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-[#1d3a5a] truncate">{item.title_snapshot}</p>
-                    <p className="text-xs text-neutral-500 mt-1">
+                    <p className="text-sm text-gray-200 truncate">{item.title_snapshot}</p>
+                    <p className="text-xs text-gray-500 mt-1">
                       Qty {item.quantity} · ${(item.unit_price_cents / 100).toFixed(2)} each
                     </p>
                     {item.model_id && (
@@ -125,19 +124,19 @@ export default async function OrderDetailPage({ params }: Props) {
             return (
               <div className="mb-6 space-y-1 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">Subtotal</span>
-                  <span className="text-[#1d3a5a]">${(subtotal / 100).toFixed(2)}</span>
+                  <span className="text-gray-500">Subtotal</span>
+                  <span className="text-gray-200">${(subtotal / 100).toFixed(2)}</span>
                 </div>
                 {shipping > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-neutral-500">
+                    <span className="text-gray-500">
                       Shipping {order.shipping_method ? `(${order.shipping_method})` : ''}
                     </span>
-                    <span className="text-[#1d3a5a]">${(shipping / 100).toFixed(2)}</span>
+                    <span className="text-gray-200">${(shipping / 100).toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between border-t border-neutral-200 pt-2 mt-2">
-                  <span className="text-xs uppercase tracking-wider text-[#1d3a5a]">Total</span>
+                <div className="flex justify-between border-t border-white/10 pt-2 mt-2">
+                  <span className="text-xs uppercase tracking-wider text-gray-300">Total</span>
                   <span className="text-xl font-bold text-[#C9A961]">
                     ${(order.total_cents / 100).toFixed(2)}
                   </span>
@@ -151,7 +150,7 @@ export default async function OrderDetailPage({ params }: Props) {
               href={`https://dashboard.stripe.com/test/checkout/sessions/${order.stripe_payment_id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs uppercase tracking-wider text-[#1d3a5a] hover:text-[#C9A961]"
+              className="text-xs uppercase tracking-wider text-gray-500 hover:text-[#C9A961]"
             >
               View in Stripe ↗
             </a>
@@ -161,9 +160,9 @@ export default async function OrderDetailPage({ params }: Props) {
         {/* Shipping */}
         <div>
           <p className="text-xs uppercase tracking-wider text-[#C9A961] mb-3">Ship to</p>
-          <div className="text-sm text-[#1d3a5a] space-y-1">
+          <div className="text-sm text-gray-200 space-y-1">
             <p>{addr.name ?? '—'}</p>
-            <p className="text-neutral-500">{addr.email ?? '—'}</p>
+            <p className="text-gray-500">{addr.email ?? '—'}</p>
             {addr.line1 && <p>{addr.line1}</p>}
             {addr.line2 && <p>{addr.line2}</p>}
             {(addr.city || addr.state) && (
@@ -175,13 +174,13 @@ export default async function OrderDetailPage({ params }: Props) {
           {order.estimated_ship_date && (
             <>
               <p className="text-xs uppercase tracking-wider text-[#C9A961] mt-6 mb-2">Estimated ship date</p>
-              <p className="text-sm">{order.estimated_ship_date}</p>
+              <p className="text-sm text-gray-200">{order.estimated_ship_date}</p>
             </>
           )}
         </div>
       </div>
 
-      <div className="border-t border-neutral-200 mt-12 pt-6 text-xs text-neutral-500 font-mono">
+      <div className="border-t border-white/10 mt-12 pt-6 text-xs text-gray-500 font-mono">
         <p>Order ID: {order.id}</p>
         {order.stripe_payment_id && <p>Stripe ID: {order.stripe_payment_id}</p>}
         {order.user_id && <p>User ID: {order.user_id}</p>}

@@ -29,13 +29,11 @@ export default function Catalog({ models }: { models: Model[] }) {
   const [sortOpen, setSortOpen] = useState(false)
   const [categoryOpen, setCategoryOpen] = useState(false)
 
-  // Build the list of categories from the data itself
   const categories = useMemo(() => {
     const set = new Set(models.map((m) => m.category).filter(Boolean))
     return ['all', ...Array.from(set).sort()]
   }, [models])
 
-  // Apply filter + sort
   const visible = useMemo(() => {
     let result = models
     if (category !== 'all') {
@@ -67,8 +65,8 @@ export default function Catalog({ models }: { models: Model[] }) {
   return (
     <section id="catalog" className="max-w-7xl mx-auto">
       {/* Filter / sort bar */}
-      <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-neutral-200">
-        <p className="text-xs uppercase tracking-wider text-neutral-500">
+      <div className="px-6 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10">
+        <p className="text-xs uppercase tracking-wider text-gray-500">
           Catalog · {visible.length} {visible.length === 1 ? 'item' : 'items'}
         </p>
 
@@ -81,14 +79,14 @@ export default function Catalog({ models }: { models: Model[] }) {
                 setCategoryOpen((v) => !v)
                 setSortOpen(false)
               }}
-              className="text-xs uppercase tracking-wider text-neutral-700 hover:text-[#C9A961] flex items-center gap-2"
+              className="text-xs uppercase tracking-wider text-gray-300 hover:text-[#C9A961] flex items-center gap-2"
             >
-              <span className="text-neutral-400">Category:</span>
+              <span className="text-gray-600">Category:</span>
               <span>{category}</span>
               <span className="text-[#C9A961]">▾</span>
             </button>
             {categoryOpen && (
-              <div className="absolute right-0 top-full mt-2 bg-white border border-neutral-200 z-10 min-w-[160px]">
+              <div className="absolute right-0 top-full mt-2 bg-[#16181D] border border-white/10 z-10 min-w-[160px]">
                 {categories.map((c) => (
                   <button
                     key={c}
@@ -97,8 +95,8 @@ export default function Catalog({ models }: { models: Model[] }) {
                       setCategory(c)
                       setCategoryOpen(false)
                     }}
-                    className={`block w-full text-left px-4 py-2 text-xs uppercase tracking-wider hover:bg-[#DCEBF7] transition-colors ${
-                      c === category ? 'text-[#C9A961]' : 'text-neutral-700'
+                    className={`block w-full text-left px-4 py-2 text-xs uppercase tracking-wider hover:bg-[#0c1520] transition-colors ${
+                      c === category ? 'text-[#C9A961]' : 'text-gray-300'
                     }`}
                   >
                     {c}
@@ -116,14 +114,14 @@ export default function Catalog({ models }: { models: Model[] }) {
                 setSortOpen((v) => !v)
                 setCategoryOpen(false)
               }}
-              className="text-xs uppercase tracking-wider text-neutral-700 hover:text-[#C9A961] flex items-center gap-2"
+              className="text-xs uppercase tracking-wider text-gray-300 hover:text-[#C9A961] flex items-center gap-2"
             >
-              <span className="text-neutral-400">Sort:</span>
+              <span className="text-gray-600">Sort:</span>
               <span>{currentSortLabel}</span>
               <span className="text-[#C9A961]">▾</span>
             </button>
             {sortOpen && (
-              <div className="absolute right-0 top-full mt-2 bg-white border border-neutral-200 z-10 min-w-[200px]">
+              <div className="absolute right-0 top-full mt-2 bg-[#16181D] border border-white/10 z-10 min-w-[200px]">
                 {sortOptions.map((opt) => (
                   <button
                     key={opt.value}
@@ -132,8 +130,8 @@ export default function Catalog({ models }: { models: Model[] }) {
                       setSortBy(opt.value)
                       setSortOpen(false)
                     }}
-                    className={`block w-full text-left px-4 py-2 text-xs uppercase tracking-wider hover:bg-[#DCEBF7] transition-colors ${
-                      opt.value === sortBy ? 'text-[#C9A961]' : 'text-neutral-700'
+                    className={`block w-full text-left px-4 py-2 text-xs uppercase tracking-wider hover:bg-[#0c1520] transition-colors ${
+                      opt.value === sortBy ? 'text-[#C9A961]' : 'text-gray-300'
                     }`}
                   >
                     {opt.label}
@@ -147,7 +145,7 @@ export default function Catalog({ models }: { models: Model[] }) {
 
       {/* Grid */}
       {visible.length === 0 ? (
-        <div className="text-center py-32 text-neutral-500 text-sm">
+        <div className="text-center py-32 text-gray-500 text-sm">
           <p className="mb-2">No items match these filters.</p>
           <button
             type="button"
@@ -166,15 +164,15 @@ export default function Catalog({ models }: { models: Model[] }) {
             <Link
               key={model.id}
               href={`/models/${model.id}`}
-              className={`group flex flex-col justify-between aspect-square p-4 border-r border-b border-neutral-200 hover:bg-[#DCEBF7] transition-colors overflow-hidden ${
-                i % 2 === 0 ? 'bg-white' : 'bg-[#DCEBF7]/40'
+              className={`group flex flex-col justify-between aspect-square p-4 border-r border-b border-white/10 hover:bg-[#0c1520] transition-colors overflow-hidden ${
+                i % 2 === 0 ? 'bg-[#0A0A0C]' : 'bg-[#0f1218]'
               }`}
             >
               <div className="flex justify-between items-start">
-                <span className="text-xs text-[#1d3a5a] tracking-wider">
+                <span className="text-xs text-gray-600 tracking-wider">
                   {String(i + 1).padStart(3, '0')}
                 </span>
-                <span className="text-xs uppercase tracking-wider text-neutral-500">
+                <span className="text-xs uppercase tracking-wider text-gray-600">
                   {model.category}
                 </span>
               </div>
@@ -186,11 +184,11 @@ export default function Catalog({ models }: { models: Model[] }) {
                     className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
-                  <div className="text-xs text-neutral-400">No preview</div>
+                  <div className="text-xs text-gray-700">No preview</div>
                 )}
               </div>
               <div className="flex justify-between items-end">
-                <span className="text-xs text-[#1d3a5a] truncate pr-2">{model.title}</span>
+                <span className="text-xs text-gray-200 truncate pr-2">{model.title}</span>
                 <span className="text-xs font-bold text-[#C9A961] whitespace-nowrap">
                   ${(model.our_price_cents / 100).toFixed(2)}
                 </span>

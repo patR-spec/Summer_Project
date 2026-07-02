@@ -32,27 +32,27 @@ export default function LoginPage() {
 
   return (
     <main className="p-8 max-w-md mx-auto">
-      <h1 className="text-2xl mb-6 font-bold">Admin login</h1>
+      <h1 className="text-2xl mb-6 font-bold text-white">Admin login</h1>
       <div className="space-y-4">
         <input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border border-white/10 rounded bg-[#16181D] text-gray-200 placeholder-gray-600 outline-none focus:border-[#C9A961]"
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-2 border border-white/10 rounded bg-[#16181D] text-gray-200 placeholder-gray-600 outline-none focus:border-[#C9A961]"
         />
-        {error && <p className="text-red-600 text-sm">{error}</p>}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
         <button
           onClick={handleLogin}
           disabled={loading}
-          className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="w-full bg-[#C9A961] text-[#0A0A0C] p-2 rounded hover:bg-[#a58943] disabled:opacity-50"
         >
           {loading ? 'Signing in...' : 'Sign in'}
         </button>

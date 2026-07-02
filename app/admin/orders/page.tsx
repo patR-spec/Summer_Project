@@ -6,7 +6,6 @@ import StatusDropdown from './status-dropdown'
 
 export const dynamic = 'force-dynamic'
 
-if (process.env.NODE_ENV !== 'development') redirect('/')
 
 type OrderRow = {
     id: string
@@ -27,6 +26,8 @@ export default async function AdminOrdersPage({
 }: {
   searchParams: Promise<{ status?: string }>
 }) {
+  if (process.env.NODE_ENV !== 'development') redirect('/')
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -68,12 +69,12 @@ export default async function AdminOrdersPage({
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-10">
-      <div className="border-b border-neutral-200 pb-6 mb-8">
-        <p className="text-xs uppercase tracking-[0.2em] text-[#1d3a5a] mb-2">Admin</p>
-        <h1 className="text-3xl sm:text-4xl font-bold text-[#1d3a5a] tracking-tight">
+      <div className="border-b border-white/10 pb-6 mb-8">
+        <p className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-2">Admin</p>
+        <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
           Orders
         </h1>
-        <p className="text-xs text-neutral-500 mt-2">
+        <p className="text-xs text-gray-500 mt-2">
           Logged in as {user.email}
         </p>
       </div>
@@ -89,8 +90,8 @@ export default async function AdminOrdersPage({
               href={s === 'all' ? '/admin/orders' : `/admin/orders?status=${s}`}
               className={`px-3 py-1.5 text-xs uppercase tracking-wider border transition-colors ${
                 active
-                  ? 'border-[#C9A961] bg-[#C9A961] text-white'
-                  : 'border-neutral-300 text-neutral-700 hover:border-[#C9A961] hover:text-[#C9A961]'
+                  ? 'border-[#C9A961] bg-[#C9A961] text-[#0A0A0C]'
+                  : 'border-white/10 text-gray-300 hover:border-[#C9A961] hover:text-[#C9A961]'
               }`}
             >
               {s.replace('_', ' ')} ({count})
@@ -100,17 +101,17 @@ export default async function AdminOrdersPage({
       </div>
 
       {error && (
-        <p className="text-red-600 text-sm">Error loading: {error.message}</p>
+        <p className="text-red-400 text-sm">Error loading: {error.message}</p>
       )}
 
       {!orders || orders.length === 0 ? (
-        <p className="text-center text-neutral-500 text-sm py-16">
+        <p className="text-center text-gray-500 text-sm py-16">
           No orders {statusFilter && statusFilter !== 'all' ? `with status "${statusFilter}"` : 'yet'}.
         </p>
       ) : (
-        <div className="border border-neutral-200">
+        <div className="border border-white/10">
           {/* Header row */}
-          <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 border-b border-neutral-200 bg-[#DCEBF7]/40 text-xs uppercase tracking-wider text-[#1d3a5a]">
+          <div className="hidden md:grid grid-cols-12 gap-4 px-4 py-3 border-b border-white/10 bg-[#0c1520] text-xs uppercase tracking-wider text-gray-400">
             <div className="col-span-1">Image</div>
             <div className="col-span-2">Order</div>
             <div className="col-span-2">Item</div>
@@ -131,25 +132,25 @@ export default async function AdminOrdersPage({
             return (
               <div
                 key={order.id}
-                className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 py-4 border-b last:border-b-0 border-neutral-200 items-center"
+                className="grid grid-cols-1 md:grid-cols-12 gap-4 px-4 py-4 border-b last:border-b-0 border-white/10 items-center"
               >
                 <div className="md:col-span-1">
                   {(order.order_items?.[0]?.preview_image_url ?? order.models?.preview_image_urls?.[0]) ? (
                     <img
                       src={order.order_items?.[0]?.preview_image_url ?? order.models?.preview_image_urls?.[0] ?? ''}
                       alt=""
-                      className="w-12 h-12 object-cover bg-[#DCEBF7]"
+                      className="w-12 h-12 object-cover bg-[#0c1520]"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-neutral-100 flex items-center justify-center text-xs text-neutral-400">
+                    <div className="w-12 h-12 bg-[#1a1d24] flex items-center justify-center text-xs text-gray-600">
                       —
                     </div>
                   )}
                 </div>
 
                 <div className="md:col-span-2">
-                  <p className="text-xs text-neutral-500 font-mono">{order.id.slice(0, 8)}</p>
-                  <p className="text-xs text-neutral-500 mt-1">
+                  <p className="text-xs text-gray-500 font-mono">{order.id.slice(0, 8)}</p>
+                  <p className="text-xs text-gray-500 mt-1">
                     {created.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                     {' · '}
                     {created.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}
@@ -159,32 +160,32 @@ export default async function AdminOrdersPage({
                 <div className="md:col-span-2">
                   {order.order_items && order.order_items.length > 0 ? (
                     order.order_items.length === 1 ? (
-                      <p className="text-sm text-[#1d3a5a] truncate">
+                      <p className="text-sm text-gray-200 truncate">
                         {order.order_items[0].title_snapshot}
                         {order.order_items[0].quantity > 1 && ` × ${order.order_items[0].quantity}`}
                       </p>
                     ) : (
                       <div>
-                        <p className="text-sm text-[#1d3a5a]">
+                        <p className="text-sm text-gray-200">
                           {order.order_items.reduce((s, i) => s + i.quantity, 0)} items
                         </p>
-                        <p className="text-xs text-neutral-500 truncate">
+                        <p className="text-xs text-gray-500 truncate">
                           {order.order_items.map((i) => i.title_snapshot).join(', ')}
                         </p>
                       </div>
                     )
                   ) : (
-                    <p className="text-sm text-[#1d3a5a] truncate">
+                    <p className="text-sm text-gray-200 truncate">
                       {order.models?.title ?? 'Custom request'}
                     </p>
                   )}
                 </div>
 
                 <div className="md:col-span-2 text-xs">
-                  <p className="text-[#1d3a5a] truncate">{customerName}</p>
-                  <p className="text-neutral-500 truncate">{customerEmail}</p>
+                  <p className="text-gray-200 truncate">{customerName}</p>
+                  <p className="text-gray-500 truncate">{customerEmail}</p>
                   {city && (
-                    <p className="text-neutral-500 truncate">{city}{state ? `, ${state}` : ''}</p>
+                    <p className="text-gray-500 truncate">{city}{state ? `, ${state}` : ''}</p>
                   )}
                 </div>
 
@@ -199,20 +200,20 @@ export default async function AdminOrdersPage({
                 <div className="md:col-span-2 flex justify-end gap-3 text-xs uppercase tracking-wider">
                   <Link
                     href={`/admin/orders/${order.id}`}
-                    className="text-[#1d3a5a] hover:text-[#C9A961]"
+                    className="text-gray-300 hover:text-[#C9A961]"
                   >
                     View
                   </Link>
                   {order.stripe_payment_id && (
-          <a
-          href={`https://dashboard.stripe.com/test/checkout/sessions/${order.stripe_payment_id}`}
+                    <a
+                      href={`https://dashboard.stripe.com/test/checkout/sessions/${order.stripe_payment_id}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-neutral-500 hover:text-[#C9A961]"
+                      className="text-gray-500 hover:text-[#C9A961]"
                     >
                       Stripe ↗
                     </a>
-      )}
+                  )}
                 </div>
               </div>
             )
@@ -220,7 +221,7 @@ export default async function AdminOrdersPage({
         </div>
       )}
 
-      <p className="text-xs text-neutral-500 mt-6">
+      <p className="text-xs text-gray-500 mt-6">
         {orders.length} of {statusCounts.all} total orders
       </p>
     </main>

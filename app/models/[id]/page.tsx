@@ -32,14 +32,14 @@ export default async function ModelPage({ params }: Props) {
 
   return (
     <main className="max-w-7xl mx-auto">
-      <div className="px-6 py-4 border-b border-neutral-200">
-        <Link href="/" className="text-xs uppercase tracking-wider text-neutral-500 hover:text-[#C9A961] transition-colors">
+      <div className="px-6 py-4 border-b border-white/10">
+        <Link href="/" className="text-xs uppercase tracking-wider text-gray-500 hover:text-[#C9A961] transition-colors">
           ← Back to catalog
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 border-b border-neutral-200">
-        <div className="aspect-square bg-[#DCEBF7] flex items-center justify-center p-8 md:border-r border-neutral-200">
+      <div className="grid grid-cols-1 md:grid-cols-2 border-b border-white/10">
+        <div className="aspect-square bg-[#0c1520] flex items-center justify-center p-8 md:border-r border-white/10">
           {model.preview_image_urls && model.preview_image_urls[0] ? (
             <img
               src={model.preview_image_urls[0]}
@@ -47,19 +47,19 @@ export default async function ModelPage({ params }: Props) {
               className="max-w-full max-h-full object-contain"
             />
           ) : (
-            <div className="text-xs text-neutral-500">No preview available</div>
+            <div className="text-xs text-gray-500">No preview available</div>
           )}
         </div>
 
         <div className="p-8 sm:p-12 flex flex-col justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-neutral-500 mb-3">
+            <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-3">
               {model.category}
             </p>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#1d3a5a] tracking-tight mb-3">
+            <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-3">
               {model.title}
             </h1>
-            <p className="text-xs text-neutral-500 mb-8">
+            <p className="text-xs text-gray-500 mb-8">
               by{' '}
               <a href={model.original_url} target="_blank" rel="noopener noreferrer" className="text-[#C9A961] hover:underline">
                 {model.designer_name}
@@ -73,35 +73,35 @@ export default async function ModelPage({ params }: Props) {
             </div>
 
             <BuyButton
-  modelId={model.id}
-  title={model.title}
-  priceCents={model.our_price_cents}
-  previewImageUrl={model.preview_image_urls?.[0] ?? null}
-/>
+              modelId={model.id}
+              title={model.title}
+              priceCents={model.our_price_cents}
+              previewImageUrl={model.preview_image_urls?.[0] ?? null}
+            />
 
             {model.description && (
               <div className="mt-10 mb-8">
-                <p className="text-xs uppercase tracking-wider text-neutral-500 mb-3">About</p>
-                <p className="text-sm text-neutral-700 leading-relaxed whitespace-pre-wrap">
+                <p className="text-xs uppercase tracking-wider text-gray-500 mb-3">About</p>
+                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
                   {model.description}
                 </p>
               </div>
             )}
           </div>
 
-          <div className="mt-10 pt-6 border-t border-neutral-200 space-y-2 text-xs">
+          <div className="mt-10 pt-6 border-t border-white/10 space-y-2 text-xs">
             <div className="flex justify-between">
-              <span className="text-neutral-500 uppercase tracking-wider">License</span>
-              <span className="text-[#1d3a5a]">{licenseLabel}</span>
+              <span className="text-gray-500 uppercase tracking-wider">License</span>
+              <span className="text-gray-200">{licenseLabel}</span>
             </div>
             {model.estimated_print_hours && (
               <div className="flex justify-between">
-                <span className="text-neutral-500 uppercase tracking-wider">Print time</span>
-                <span className="text-[#1d3a5a]">~{model.estimated_print_hours} hrs</span>
+                <span className="text-gray-500 uppercase tracking-wider">Print time</span>
+                <span className="text-gray-200">~{model.estimated_print_hours} hrs</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-neutral-500 uppercase tracking-wider">Source</span>
+              <span className="text-gray-500 uppercase tracking-wider">Source</span>
               <a href={model.original_url} target="_blank" rel="noopener noreferrer" className="text-[#C9A961] hover:underline">
                 View original ↗
               </a>

@@ -22,7 +22,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <header className="border-b border-neutral-200 bg-white sticky top-0 z-20">
+    <header className="border-b border-white/10 bg-[#0A0A0C] sticky top-0 z-20">
       <div className="max-w-7xl mx-auto px-6 h-16 sm:h-20 flex items-center justify-between sm:grid sm:grid-cols-3">
         {/* Logo */}
         <div className="flex items-center h-full overflow-hidden">
@@ -39,14 +39,14 @@ export default function Header() {
         </div>
 
         {/* Center: Nav — hidden on mobile */}
-        <nav className="hidden sm:flex items-center justify-center gap-10 text-xs uppercase tracking-[0.18em]">
-          <Link href="/" className="text-neutral-900 hover:text-[#C9A961] transition-colors">Shop</Link>
-          <Link href="/lookbook" className="text-neutral-500 hover:text-[#C9A961] transition-colors">Lookbook</Link>
-          <Link href="/about" className="text-neutral-500 hover:text-[#C9A961] transition-colors">About</Link>
+        <nav className={`hidden sm:flex items-center justify-center text-xs uppercase tracking-[0.18em] relative z-10 ${isDev ? 'gap-6' : 'gap-10'}`}>
+          <Link href="/" className="text-white hover:text-[#C9A961] transition-colors">Shop</Link>
+          <Link href="/lookbook" className="text-gray-500 hover:text-[#C9A961] transition-colors">Lookbook</Link>
+          <Link href="/about" className="text-gray-500 hover:text-[#C9A961] transition-colors">About</Link>
           {isDev && (
             <>
-              <Link href="/admin/orders" className="text-neutral-500 hover:text-[#C9A961] transition-colors">Orders</Link>
-              <Link href="/admin/models" className="text-neutral-500 hover:text-[#C9A961] transition-colors">Models</Link>
+              <Link href="/admin/orders" className="text-gray-500 hover:text-[#C9A961] transition-colors">Orders</Link>
+              <Link href="/admin/models" className="text-gray-500 hover:text-[#C9A961] transition-colors">Models</Link>
             </>
           )}
         </nav>
@@ -55,7 +55,7 @@ export default function Header() {
         <div className="flex items-center justify-end gap-5">
           <Link
             href="/cart"
-            className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-neutral-900 hover:text-[#C9A961] transition-colors"
+            className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-white hover:text-[#C9A961] transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -82,17 +82,17 @@ export default function Header() {
             className="sm:hidden flex flex-col justify-center gap-[5px] w-6 h-6"
           >
             <span
-              className={`block h-px bg-neutral-900 transition-all duration-200 origin-center ${
+              className={`block h-px bg-white transition-all duration-200 origin-center ${
                 mobileOpen ? 'w-5 rotate-45 translate-y-[7px]' : 'w-5'
               }`}
             />
             <span
-              className={`block h-px bg-neutral-900 transition-all duration-200 ${
+              className={`block h-px bg-white transition-all duration-200 ${
                 mobileOpen ? 'opacity-0 w-5' : 'w-5'
               }`}
             />
             <span
-              className={`block h-px bg-neutral-900 transition-all duration-200 origin-center ${
+              className={`block h-px bg-white transition-all duration-200 origin-center ${
                 mobileOpen ? 'w-5 -rotate-45 -translate-y-[7px]' : 'w-5'
               }`}
             />
@@ -102,13 +102,13 @@ export default function Header() {
 
       {/* Mobile nav drawer */}
       {mobileOpen && (
-        <nav className="sm:hidden border-t border-neutral-200 bg-white">
+        <nav className="sm:hidden border-t border-white/10 bg-[#0A0A0C]">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="block px-6 py-4 text-xs uppercase tracking-[0.18em] text-neutral-700 hover:text-[#C9A961] hover:bg-[#DCEBF7] border-b border-neutral-100 transition-colors last:border-b-0"
+              className="block px-6 py-4 text-xs uppercase tracking-[0.18em] text-gray-300 hover:text-[#C9A961] hover:bg-[#0c1520] border-b border-white/5 transition-colors last:border-b-0"
             >
               {link.label}
             </Link>

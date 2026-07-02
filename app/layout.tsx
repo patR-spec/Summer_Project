@@ -20,7 +20,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${jetbrainsMono.variable} font-mono bg-white min-h-screen text-neutral-900 antialiased`}>
+      <body className={`${jetbrainsMono.variable} font-mono bg-[#0A0A0C] min-h-screen text-white antialiased`}>
         <CartProvider>
           <Header />
           {children}

@@ -36,8 +36,8 @@ export default function PublishToggle({ modelId, isPublished }: { modelId: strin
       disabled={pending}
       className={`text-xs uppercase tracking-wider px-2 py-1 border transition-colors disabled:opacity-50 ${
         current
-          ? 'border-[#C9A961] text-[#C9A961] hover:bg-[#C9A961] hover:text-white'
-          : 'border-neutral-300 text-neutral-400 hover:border-[#1d3a5a] hover:text-[#1d3a5a]'
+          ? 'border-[#C9A961] text-[#C9A961] hover:bg-[#C9A961] hover:text-[#0A0A0C]'
+          : 'border-white/10 text-gray-600 hover:border-white/30 hover:text-white'
       }`}
     >
       {pending ? '...' : current ? 'Live' : 'Hidden'}

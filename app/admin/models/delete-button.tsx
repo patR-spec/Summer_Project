@@ -28,7 +28,7 @@ export default function DeleteButton({ modelId, modelTitle }: { modelId: string;
     <button
       onClick={handleDelete}
       disabled={deleting}
-      className="text-xs uppercase tracking-wider text-neutral-500 hover:text-red-600 disabled:opacity-50"
+      className="text-xs uppercase tracking-wider text-gray-500 hover:text-red-400 disabled:opacity-50"
     >
       {deleting ? '...' : 'Delete'}
     </button>

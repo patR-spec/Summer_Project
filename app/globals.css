@@ -10,9 +10,63 @@
   --color-okg-blue-ink: #1d3a5a;
   --color-okg-gold: #C9A961;
   --color-okg-gold-deep: #A58943;
+  --color-gold: #D4AF37;
+  --color-gold-bright: #F0D060;
+  --color-silver: #C0C4CC;
+  --color-bg-deep: #0A0A0C;
+  --color-bg-grey: #16181D;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+:root {
+  --gold: #D4AF37;
+  --gold-bright: #F0D060;
+  --silver: #C0C4CC;
+  --bg-deep: #0A0A0C;
+  --bg-grey: #16181D;
 }
 
 html, body {
   font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+}
+
+/* ── Premium button variants ── */
+.btn-gold-primary {
+  background: linear-gradient(135deg, var(--gold) 0%, #B8912F 100%);
+  color: var(--bg-deep);
+  box-shadow: 0 0 0 0 rgba(212, 175, 55, 0);
+  transition: box-shadow 0.2s ease;
+}
+.btn-gold-primary:hover {
+  box-shadow: 0 0 24px 4px rgba(212, 175, 55, 0.35), 0 0 8px 1px rgba(212, 175, 55, 0.18);
+}
+
+.btn-silver-outline {
+  border: 1px solid var(--silver);
+  color: var(--silver);
+  background: transparent;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.btn-silver-outline:hover {
+  background: var(--silver);
+  color: var(--bg-deep);
+}
+
+/* ── Form inputs ── */
+.input-form {
+  background: transparent;
+  border: 1px solid rgb(64 64 64);
+  color: white;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  outline: none;
+  transition: border-color 0.15s ease;
+  width: 100%;
+}
+.input-form:focus {
+  border-color: var(--gold);
+}
+.input-form::placeholder {
+  color: rgb(192 196 204 / 0.35);
 }

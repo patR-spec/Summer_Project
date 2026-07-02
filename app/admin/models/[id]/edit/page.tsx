@@ -31,13 +31,13 @@ export default async function EditModelPage({ params }: Props) {
     <main className="max-w-2xl mx-auto px-6 py-10">
       <Link
         href="/admin/models"
-        className="text-xs uppercase tracking-wider text-neutral-500 hover:text-[#C9A961] inline-block mb-6"
+        className="text-xs uppercase tracking-wider text-gray-500 hover:text-[#C9A961] inline-block mb-6"
       >
         ← Back to models
       </Link>
 
-      <p className="text-xs uppercase tracking-[0.2em] text-[#1d3a5a] mb-2">Admin · Edit</p>
-      <h1 className="text-3xl font-bold text-[#1d3a5a] tracking-tight mb-8">
+      <p className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-2">Admin · Edit</p>
+      <h1 className="text-3xl font-bold text-white tracking-tight mb-8">
         {model.title}
       </h1>
 

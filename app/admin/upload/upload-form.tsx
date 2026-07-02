@@ -4,6 +4,9 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createBrowserClient } from '@supabase/ssr'
 
+const inputCls = 'w-full p-2 border border-white/10 bg-[#16181D] text-gray-200 placeholder-gray-600 rounded outline-none focus:border-[#C9A961] text-sm'
+const labelCls = 'block text-sm font-medium mb-1 text-gray-300'
+
 export default function UploadForm() {
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState('')
@@ -66,8 +69,7 @@ export default function UploadForm() {
 
       setMessage('✅ Model added successfully')
       form.reset()
-      
-      // Redirect to models page after 1 second to see the new model
+
       setTimeout(() => {
         router.push('/admin/models')
       }, 1000)
@@ -86,8 +88,8 @@ export default function UploadForm() {
       <Field name="source_site" label="Source site (e.g. Printables, Scan the World)" required />
 
       <div>
-        <label className="block text-sm font-medium mb-1">License *</label>
-        <select name="license_type" required className="w-full p-2 border rounded">
+        <label className={labelCls}>License *</label>
+        <select name="license_type" required className={inputCls}>
           <option value="cc0">CC0 (Public Domain)</option>
           <option value="cc-by">CC-BY (Attribution required)</option>
           <option value="cc-by-sa">CC-BY-SA</option>
@@ -99,29 +101,29 @@ export default function UploadForm() {
       <Field name="price_dollars" label="Price in dollars (e.g. 24.99)" type="number" step="0.01" required />
 
       <div>
-        <label className="block text-sm font-medium mb-1">Description</label>
-        <textarea name="description" rows={4} className="w-full p-2 border rounded" />
+        <label className={labelCls}>Description</label>
+        <textarea name="description" rows={4} className={inputCls + ' resize-none'} />
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Model file (.stl or .3mf) *</label>
-        <input type="file" name="model_file" accept=".stl,.3mf" required />
+        <label className={labelCls}>Model file (.stl or .3mf) *</label>
+        <input type="file" name="model_file" accept=".stl,.3mf" required className="text-gray-300 text-sm" />
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Preview image *</label>
-        <input type="file" name="preview_image" accept="image/*" required />
+        <label className={labelCls}>Preview image *</label>
+        <input type="file" name="preview_image" accept="image/*" required className="text-gray-300 text-sm" />
       </div>
 
       <button
         type="submit"
         disabled={submitting}
-        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        className="bg-[#C9A961] text-[#0A0A0C] px-6 py-2 rounded hover:bg-[#a58943] disabled:opacity-50"
       >
         {submitting ? 'Uploading...' : 'Add model'}
       </button>
 
-      {message && <p className="text-sm mt-2">{message}</p>}
+      {message && <p className="text-sm mt-2 text-gray-300">{message}</p>}
     </form>
   )
 }
@@ -131,7 +133,7 @@ function Field({ name, label, type = 'text', step, required = false }: {
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium mb-1">
+      <label className={labelCls}>
         {label} {required && '*'}
       </label>
       <input
@@ -139,7 +141,7 @@ function Field({ name, label, type = 'text', step, required = false }: {
         type={type}
         step={step}
         required={required}
-        className="w-full p-2 border rounded"
+        className={inputCls}
       />
     </div>
   )

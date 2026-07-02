@@ -17,6 +17,9 @@ type Model = {
   is_published: boolean
 }
 
+const inputCls = 'w-full p-2 border border-white/10 bg-[#16181D] text-gray-200 outline-none focus:border-[#C9A961] text-sm'
+const labelCls = 'block text-xs uppercase tracking-wider text-gray-500 mb-1'
+
 export default function EditForm({ model }: { model: Model }) {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -69,12 +72,12 @@ export default function EditForm({ model }: { model: Model }) {
       <Field name="source_site" label="Source site" defaultValue={model.source_site} required />
 
       <div>
-        <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1">License *</label>
+        <label className={labelCls}>License *</label>
         <select
           name="license_type"
           defaultValue={model.license_type}
           required
-          className="w-full p-2 border border-neutral-300 focus:border-[#C9A961] outline-none text-sm"
+          className={inputCls}
         >
           <option value="cc0">CC0 (Public Domain)</option>
           <option value="cc-by">CC-BY (Attribution required)</option>
@@ -101,12 +104,12 @@ export default function EditForm({ model }: { model: Model }) {
       />
 
       <div>
-        <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1">Description</label>
+        <label className={labelCls}>Description</label>
         <textarea
           name="description"
           rows={5}
           defaultValue={model.description ?? ''}
-          className="w-full p-2 border border-neutral-300 focus:border-[#C9A961] outline-none text-sm"
+          className={inputCls + ' resize-none'}
         />
       </div>
 
@@ -118,7 +121,7 @@ export default function EditForm({ model }: { model: Model }) {
           defaultChecked={model.is_published}
           className="accent-[#C9A961] w-4 h-4"
         />
-        <label htmlFor="is_published" className="text-xs uppercase tracking-wider text-[#1d3a5a]">
+        <label htmlFor="is_published" className="text-xs uppercase tracking-wider text-gray-300">
           Published (visible in catalog)
         </label>
       </div>
@@ -127,7 +130,7 @@ export default function EditForm({ model }: { model: Model }) {
         <button
           type="submit"
           disabled={saving}
-          className="bg-[#1d3a5a] text-white px-6 py-3 text-xs uppercase tracking-wider hover:bg-[#C9A961] transition-colors disabled:opacity-50"
+          className="bg-[#C9A961] text-[#0A0A0C] px-6 py-3 text-xs uppercase tracking-wider hover:bg-[#a58943] transition-colors disabled:opacity-50"
         >
           {saving ? 'Saving...' : 'Save changes'}
         </button>
@@ -154,7 +157,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs uppercase tracking-wider text-neutral-500 mb-1">
+      <label className={labelCls}>
         {label} {required && '*'}
       </label>
       <input
@@ -163,7 +166,7 @@ function Field({
         step={step}
         defaultValue={defaultValue}
         required={required}
-        className="w-full p-2 border border-neutral-300 focus:border-[#C9A961] outline-none text-sm"
+        className={inputCls}
       />
     </div>
   )

@@ -34,12 +34,12 @@ export default function CheckoutButton() {
       <button
         onClick={handleCheckout}
         disabled={loading || items.length === 0}
-        className="w-full bg-[#1d3a5a] text-white py-4 text-xs uppercase tracking-wider hover:bg-[#C9A961] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-[#C9A961] text-[#0A0A0C] py-4 text-xs uppercase tracking-wider hover:bg-[#a58943] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? 'Loading checkout...' : 'Checkout'}
       </button>
-      {error && <p className="text-red-600 text-xs mt-3 text-center">{error}</p>}
-      <p className="text-xs text-neutral-500 mt-3 text-center">
+      {error && <p className="text-red-400 text-xs mt-3 text-center">{error}</p>}
+      <p className="text-xs text-gray-500 mt-3 text-center">
         Secure checkout powered by Stripe
       </p>
     </div>
