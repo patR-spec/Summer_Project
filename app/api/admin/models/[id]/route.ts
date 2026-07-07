@@ -45,7 +45,7 @@ export async function PATCH(
   const allowed = [
     'title', 'description', 'designer_name', 'license_type',
     'original_url', 'source_site', 'category', 'our_price_cents',
-    'is_published', 'estimated_print_hours',
+    'is_published', 'estimated_print_hours', 'preview_image_urls',
   ]
   const updates: Record<string, any> = {}
   for (const key of allowed) {
@@ -53,7 +53,7 @@ export async function PATCH(
   }
   // Type-safe validation on specific fields
   if ('license_type' in updates) {
-    const valid = ['cc0', 'cc-by', 'cc-by-sa', 'cc-by-nc', 'cc-by-nd', 'proprietary', 'unclear']
+    const valid = ['cc0', 'cc-by', 'cc-by-sa', 'cc-by-nc', 'cc-by-nc-sa', 'cc-by-nd', 'cc-by-nc-nd', 'proprietary', 'all-rights-reserved', 'unclear']
     if (!valid.includes(updates.license_type)) {
       return NextResponse.json({ error: 'Invalid license_type' }, { status: 400 })
     }
@@ -67,6 +67,14 @@ export async function PATCH(
   }
   if ('is_published' in updates) {
     updates.is_published = Boolean(updates.is_published)
+  }
+  if ('preview_image_urls' in updates) {
+    if (!Array.isArray(updates.preview_image_urls)) {
+      return NextResponse.json({ error: 'preview_image_urls must be an array' }, { status: 400 })
+    }
+    updates.preview_image_urls = (updates.preview_image_urls as unknown[])
+      .filter((u) => typeof u === 'string')
+      .slice(0, 20)
   }
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })

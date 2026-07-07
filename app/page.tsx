@@ -1,27 +1,67 @@
 import { supabase } from '@/lib/supabase'
-import Catalog from './catalog'
+import Link from 'next/link'
 import { HeroSection } from '@/components/hero-section'
 
 export const dynamic = 'force-dynamic'
 
-export default async function Home() {
-  const { data: models, error } = await supabase
+export default async function LookbookPage() {
+  const { data: models } = await supabase
     .from('models')
-    .select('id, title, designer_name, our_price_cents, preview_image_urls, category, created_at')
+    .select('id, title, preview_image_urls, category')
     .eq('is_published', true)
-
-  if (error) {
-    return (
-      <main className="p-8">
-        <p className="text-red-600 text-sm">Error loading catalog: {error.message}</p>
-      </main>
-    )
-  }
+    .order('created_at', { ascending: false })
 
   return (
     <main>
       <HeroSection />
-      <Catalog models={models ?? []} />
+
+      <section className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-10 flex items-center justify-between">
+          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+            SS26 · Lookbook
+          </p>
+          <Link
+            href="/shop"
+            className="text-xs uppercase tracking-wider text-gray-400 hover:text-[#C9A961] transition-colors"
+          >
+            Shop the catalog →
+          </Link>
+        </div>
+      </section>
+
+      {!models || models.length === 0 ? (
+        <div className="text-center py-32 text-gray-500 text-sm">
+          No items in the lookbook yet.
+        </div>
+      ) : (
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-px bg-[#1a1d24]">
+          {models.map((model, i) => (
+            <Link
+              key={model.id}
+              href={`/models/${model.id}`}
+              className="group bg-[#16181D] aspect-[4/5] flex flex-col"
+            >
+              <div className="flex-1 bg-[#0c1520] flex items-center justify-center p-8 overflow-hidden">
+                {model.preview_image_urls?.[0] ? (
+                  <img
+                    src={model.preview_image_urls[0]}
+                    alt={model.title}
+                    className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="text-xs text-gray-600">No preview</div>
+                )}
+              </div>
+              <div className="p-6 flex justify-between items-center">
+                <span className="text-xs uppercase tracking-wider text-gray-500">
+                  {String(i + 1).padStart(3, '0')} · {model.category}
+                </span>
+                <span className="text-sm text-gray-200">{model.title}</span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
     </main>
   )
 }

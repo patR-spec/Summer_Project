@@ -7,7 +7,7 @@ export default function AboutPage() {
               About
             </p>
             <h1 className="text-4xl sm:text-6xl font-bold text-white tracking-tight">
-              OKGenie
+              OkayGenie
             </h1>
           </div>
         </section>
@@ -16,7 +16,7 @@ export default function AboutPage() {
           <div>
             <p className="text-xs uppercase tracking-wider text-[#C9A961] mb-3">01 / The idea</p>
             <p className="text-sm text-gray-300 leading-relaxed">
-              OKGenie is a one-printer studio making physical things on request. We curate models worth printing — from museum scans to community designers — and ship each one as a one-off, made when you order it.
+              OkayGenie is a one-printer studio making physical things on request. We curate models worth printing — from museum scans to community designers — and ship each one as a one-off, made when you order it.
             </p>
           </div>
           <div>

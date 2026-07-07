@@ -27,10 +27,10 @@ export default function UploadForm() {
 
     try {
       const modelFile = formData.get('model_file') as File
-      const previewFile = formData.get('preview_image') as File
+      const previewFiles = formData.getAll('preview_images') as File[]
 
       if (!modelFile || modelFile.size === 0) throw new Error('Pick a model file')
-      if (!previewFile || previewFile.size === 0) throw new Error('Pick a preview image')
+      if (!previewFiles.length || previewFiles[0].size === 0) throw new Error('Pick at least one preview image')
 
       // 1. Upload the STL/3MF
       const modelPath = `${Date.now()}-${modelFile.name}`
@@ -39,17 +39,17 @@ export default function UploadForm() {
         .upload(modelPath, modelFile)
       if (modelErr) throw modelErr
 
-      // 2. Upload the preview image
-      const previewPath = `${Date.now()}-${previewFile.name}`
-      const { error: previewErr } = await supabase.storage
-        .from('model-previews')
-        .upload(previewPath, previewFile)
-      if (previewErr) throw previewErr
-
-      // Get the public URL for the preview
-      const { data: previewUrlData } = supabase.storage
-        .from('model-previews')
-        .getPublicUrl(previewPath)
+      // 2. Upload all preview images
+      const previewUrls: string[] = []
+      for (const previewFile of previewFiles) {
+        const previewPath = `${Date.now()}-${Math.random().toString(36).slice(2)}-${previewFile.name}`
+        const { error: previewErr } = await supabase.storage
+          .from('model-previews')
+          .upload(previewPath, previewFile)
+        if (previewErr) throw previewErr
+        const { data: previewUrlData } = supabase.storage.from('model-previews').getPublicUrl(previewPath)
+        previewUrls.push(previewUrlData.publicUrl)
+      }
 
       // 3. Insert the database row
       const { error: dbErr } = await supabase.from('models').insert({
@@ -60,7 +60,7 @@ export default function UploadForm() {
         original_url: formData.get('original_url') as string,
         source_site: formData.get('source_site') as string,
         stl_file_url: modelPath,
-        preview_image_urls: [previewUrlData.publicUrl],
+        preview_image_urls: previewUrls,
         category: formData.get('category') as string,
         our_price_cents: Math.round(parseFloat(formData.get('price_dollars') as string) * 100),
         is_published: true,
@@ -84,16 +84,25 @@ export default function UploadForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Field name="title" label="Title" required />
       <Field name="designer_name" label="Designer name" required />
-      <Field name="original_url" label="Original URL (where you found it)" required />
+      <Field name="original_url" label="Original URL (optional)" />
       <Field name="source_site" label="Source site (e.g. Printables, Scan the World)" required />
 
       <div>
         <label className={labelCls}>License *</label>
         <select name="license_type" required className={inputCls}>
-          <option value="cc0">CC0 (Public Domain)</option>
-          <option value="cc-by">CC-BY (Attribution required)</option>
-          <option value="cc-by-sa">CC-BY-SA</option>
-          <option value="proprietary">Proprietary (with permission)</option>
+          <optgroup label="── Original / Proprietary">
+            <option value="all-rights-reserved">All Rights Reserved — Original Work (no copying)</option>
+            <option value="proprietary">Proprietary — 3rd Party (with permission)</option>
+          </optgroup>
+          <optgroup label="── Creative Commons">
+            <option value="cc0">CC0 — Public Domain</option>
+            <option value="cc-by">CC-BY — Attribution</option>
+            <option value="cc-by-sa">CC-BY-SA — Attribution + ShareAlike</option>
+            <option value="cc-by-nc">CC-BY-NC — Non-Commercial</option>
+            <option value="cc-by-nc-sa">CC-BY-NC-SA — Non-Commercial + ShareAlike</option>
+            <option value="cc-by-nd">CC-BY-ND — No Derivatives</option>
+            <option value="cc-by-nc-nd">CC-BY-NC-ND — Non-Commercial + No Derivatives</option>
+          </optgroup>
         </select>
       </div>
 
@@ -111,8 +120,8 @@ export default function UploadForm() {
       </div>
 
       <div>
-        <label className={labelCls}>Preview image *</label>
-        <input type="file" name="preview_image" accept="image/*" required className="text-gray-300 text-sm" />
+        <label className={labelCls}>Preview images * (select multiple)</label>
+        <input type="file" name="preview_images" accept="image/*" multiple required className="text-gray-300 text-sm" />
       </div>
 
       <button

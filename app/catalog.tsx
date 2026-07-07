@@ -23,6 +23,87 @@ const sortOptions: { value: SortKey; label: string }[] = [
   { value: 'name_az', label: 'Name: A-Z' },
 ]
 
+function ProductCard({ model, index }: { model: Model; index: number }) {
+  const images = model.preview_image_urls ?? []
+  const [idx, setIdx] = useState(0)
+  const hasMultiple = images.length > 1
+
+  return (
+    <Link
+      href={`/models/${model.id}`}
+      className={`group relative flex flex-col justify-between aspect-square p-4 border-r border-b border-white/10 hover:bg-[#0c1520] transition-colors overflow-hidden ${
+        index % 2 === 0 ? 'bg-[#0A0A0C]' : 'bg-[#0f1218]'
+      }`}
+    >
+      {/* Top row */}
+      <div className="flex justify-between items-start">
+        <span className="text-xs text-gray-600 tracking-wider">
+          {String(index + 1).padStart(3, '0')}
+        </span>
+        <span className="text-xs uppercase tracking-wider text-gray-600">
+          {model.category}
+        </span>
+      </div>
+
+      {/* Image area */}
+      <div className="flex-1 min-h-0 flex items-center justify-center py-3 relative">
+        {images[idx] ? (
+          <img
+            src={images[idx]}
+            alt={model.title}
+            className={`max-h-full max-w-full object-contain transition-transform duration-300 ${hasMultiple ? '' : 'group-hover:scale-105'}`}
+          />
+        ) : (
+          <div className="text-xs text-gray-700">No preview</div>
+        )}
+
+        {/* Prev / Next — full-height click strips with gradient edge */}
+        {hasMultiple && (
+          <>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setIdx((v) => (v - 1 + images.length) % images.length)
+              }}
+              className="absolute inset-y-0 left-0 w-9 flex items-center justify-start pl-1.5 bg-gradient-to-r from-black/50 to-transparent text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity select-none hover:from-black/70"
+              aria-label="Previous image"
+            >
+              ‹
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setIdx((v) => (v + 1) % images.length)
+              }}
+              className="absolute inset-y-0 right-0 w-9 flex items-center justify-end pr-1.5 bg-gradient-to-l from-black/50 to-transparent text-white text-2xl opacity-0 group-hover:opacity-100 transition-opacity select-none hover:from-black/70"
+              aria-label="Next image"
+            >
+              ›
+            </button>
+
+            {/* Image count badge */}
+            <div className="absolute bottom-1 right-1 bg-black/55 text-gray-400 text-[9px] uppercase tracking-wider px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              {idx + 1}/{images.length}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Bottom row */}
+      <div className="flex justify-between items-end">
+        <span className="text-xs text-gray-200 truncate pr-2">{model.title}</span>
+        <span className="text-xs font-bold text-[#C9A961] whitespace-nowrap">
+          ${(model.our_price_cents / 100).toFixed(2)}
+        </span>
+      </div>
+    </Link>
+  )
+}
+
 export default function Catalog({ models }: { models: Model[] }) {
   const [sortBy, setSortBy] = useState<SortKey>('newest')
   const [category, setCategory] = useState<string>('all')
@@ -161,39 +242,7 @@ export default function Catalog({ models }: { models: Model[] }) {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {visible.map((model, i) => (
-            <Link
-              key={model.id}
-              href={`/models/${model.id}`}
-              className={`group flex flex-col justify-between aspect-square p-4 border-r border-b border-white/10 hover:bg-[#0c1520] transition-colors overflow-hidden ${
-                i % 2 === 0 ? 'bg-[#0A0A0C]' : 'bg-[#0f1218]'
-              }`}
-            >
-              <div className="flex justify-between items-start">
-                <span className="text-xs text-gray-600 tracking-wider">
-                  {String(i + 1).padStart(3, '0')}
-                </span>
-                <span className="text-xs uppercase tracking-wider text-gray-600">
-                  {model.category}
-                </span>
-              </div>
-              <div className="flex-1 min-h-0 flex items-center justify-center py-3">
-                {model.preview_image_urls && model.preview_image_urls[0] ? (
-                  <img
-                    src={model.preview_image_urls[0]}
-                    alt={model.title}
-                    className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <div className="text-xs text-gray-700">No preview</div>
-                )}
-              </div>
-              <div className="flex justify-between items-end">
-                <span className="text-xs text-gray-200 truncate pr-2">{model.title}</span>
-                <span className="text-xs font-bold text-[#C9A961] whitespace-nowrap">
-                  ${(model.our_price_cents / 100).toFixed(2)}
-                </span>
-              </div>
-            </Link>
+            <ProductCard key={model.id} model={model} index={i} />
           ))}
         </div>
       )}

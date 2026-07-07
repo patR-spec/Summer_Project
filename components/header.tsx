@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { useCart } from '@/lib/cart-context'
 
 const isDev = process.env.NODE_ENV === 'development'
 
 const navLinks = [
-  { href: '/', label: 'Shop' },
-  { href: '/lookbook', label: 'Lookbook' },
+  { href: '/shop', label: 'Shop' },
+  { href: '/', label: 'Lookbook' },
   { href: '/about', label: 'About' },
   ...(isDev ? [
     { href: '/admin/orders', label: 'Orders' },
@@ -19,7 +20,11 @@ const navLinks = [
 
 export default function Header() {
   const { count } = useCart()
+  const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const navCls = (href: string) =>
+    `hover:text-[#C9A961] transition-colors ${pathname === href ? 'text-white' : 'text-gray-500'}`
 
   return (
     <header className="border-b border-white/10 bg-[#0A0A0C] sticky top-0 z-20">
@@ -40,13 +45,13 @@ export default function Header() {
 
         {/* Center: Nav — hidden on mobile */}
         <nav className={`hidden sm:flex items-center justify-center text-xs uppercase tracking-[0.18em] relative z-10 ${isDev ? 'gap-6' : 'gap-10'}`}>
-          <Link href="/" className="text-white hover:text-[#C9A961] transition-colors">Shop</Link>
-          <Link href="/lookbook" className="text-gray-500 hover:text-[#C9A961] transition-colors">Lookbook</Link>
-          <Link href="/about" className="text-gray-500 hover:text-[#C9A961] transition-colors">About</Link>
+          <Link href="/shop" className={navCls('/shop')}>Shop</Link>
+          <Link href="/" className={navCls('/')}>Lookbook</Link>
+          <Link href="/about" className={navCls('/about')}>About</Link>
           {isDev && (
             <>
-              <Link href="/admin/orders" className="text-gray-500 hover:text-[#C9A961] transition-colors">Orders</Link>
-              <Link href="/admin/models" className="text-gray-500 hover:text-[#C9A961] transition-colors">Models</Link>
+              <Link href="/admin/orders" className={navCls('/admin/orders')}>Orders</Link>
+              <Link href="/admin/models" className={navCls('/admin/models')}>Models</Link>
             </>
           )}
         </nav>

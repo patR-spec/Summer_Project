@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 export function HeroSection() {
   const containerRef  = useRef<HTMLDivElement>(null)
+  const stickyRef     = useRef<HTMLDivElement>(null)
   const videoRef      = useRef<HTMLVideoElement>(null)
 
   // Phase 1
@@ -24,8 +25,9 @@ export function HeroSection() {
 
   useEffect(() => {
     const container = containerRef.current
+    const stickyEl  = stickyRef.current
     const video     = videoRef.current
-    if (!container || !video) return
+    if (!container || !stickyEl || !video) return
 
     // ── Local mutable state (never triggers React re-renders) ──────────────
     let targetP    = 0   // set by scroll handler
@@ -35,8 +37,9 @@ export function HeroSection() {
     let isVisible  = false
 
     // Cache scroll geometry once at mount (cheap, won't change while user scrolls)
+    // totalScrollable = how far you can scroll before the sticky element unpins
     const scrollStart     = window.scrollY + container.getBoundingClientRect().top
-    const totalScrollable = container.offsetHeight - window.innerHeight
+    const totalScrollable = container.offsetHeight - stickyEl.offsetHeight
 
     // ── Video metadata ──────────────────────────────────────────────────────
     const onMeta = () => { metaLoaded = true }
@@ -153,11 +156,11 @@ export function HeroSection() {
   }, [])
 
   return (
-    // 350vh container — defines the scroll distance for the hero
     <div ref={containerRef} style={{ height: '350vh' }}>
 
       {/* ── Sticky viewport — pinned, fills the screen ── */}
       <div
+        ref={stickyRef}
         className="sticky top-0 w-full overflow-hidden"
         style={{ height: '100dvh', background: '#0A0A0C' }}
         aria-label="Hero"
@@ -291,7 +294,7 @@ export function HeroSection() {
               <span aria-hidden="true">→</span>
             </Link>
             <Link
-              href="#catalog"
+              href="/shop"
               className="btn-silver-outline inline-flex items-center gap-3 px-8 py-3.5 font-mono text-[11px] uppercase tracking-[0.22em] sm:px-10 sm:py-4 sm:text-xs"
             >
               Shop the catalog
